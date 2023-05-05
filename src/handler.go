@@ -22,17 +22,24 @@ func (ctrl *Controller) Health(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "ok")
 }
 
-func (ctrl *Controller) Redirect(w http.ResponseWriter, r *http.Request) {
-	url := ctrl.config.AuthCodeURL(os.Getenv("OAUTH2_STATE"), oauth2.AccessTypeOffline)
+func (ctrl *Controller) Auth(w http.ResponseWriter, r *http.Request) {
+	url := ctrl.config.AuthCodeURL(os.Getenv("OAUTH2_STATE"), oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func (ctrl *Controller) Callback(w http.ResponseWriter, r *http.Request) {
+	// get tokens
 	code := r.URL.Query().Get("code")
 	token, err := ctrl.config.Exchange(r.Context(), code)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "Access token: %s\n", token.AccessToken)
+
+	// save access token & refresh token
+	if err := SaveToken("../.secrets/tokens.json", token); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	fmt.Fprintln(w, "Token successfully saved to local storage")
 }

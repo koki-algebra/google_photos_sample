@@ -16,7 +16,7 @@ func NewServMux(config *oauth2.Config) (http.Handler, func(), error) {
 	ctrl := NewController(config)
 
 	mux.HandleFunc("/health", ctrl.Health)
-	mux.HandleFunc("/auth", ctrl.Redirect)
+	mux.HandleFunc("/auth", ctrl.Auth)
 	mux.HandleFunc("/callback", ctrl.Callback)
 
 	return mux, func() {}, nil
