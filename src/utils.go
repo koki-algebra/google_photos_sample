@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -65,4 +66,15 @@ func GetTokenFromLocal(filepath string) (token *oauth2.Token, err error) {
 	}
 
 	return
+}
+
+func WriteJSON(w http.ResponseWriter, code int, v any) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(code)
+
+	if err := json.NewEncoder(w).Encode(&v); err != nil {
+		return err
+	}
+
+	return nil
 }
