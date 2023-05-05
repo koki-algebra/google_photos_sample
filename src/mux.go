@@ -13,14 +13,13 @@ func NewServMux(config *oauth2.Config) (http.Handler, func(), error) {
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.Recoverer)
 
-	ctrl := NewController(config)
+	client := NewGooglePhotosClient(config)
+
+	ctrl := NewController(config, client)
 
 	mux.Get("/health", ctrl.Health)
 	mux.Get("/auth", ctrl.Auth)
 	mux.Get("/callback", ctrl.Callback)
-
-	// images
-	mux.Get("/images", ctrl.GetImages)
 
 	mux.Get("/albums", ctrl.GetAlbums)
 	mux.Get("/albums/{id}/migration", ctrl.AlbumMigration)
