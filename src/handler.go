@@ -11,6 +11,7 @@ import (
 
 type Controller struct {
 	config *oauth2.Config
+	client GooglePhotosClient
 }
 
 func NewController(config *oauth2.Config) *Controller {
@@ -83,4 +84,31 @@ func (ctrl *Controller) GetImages(w http.ResponseWriter, r *http.Request) {
 	if _, err := io.Copy(w, resp.Body); err != nil {
 		http.Error(w, "faild to write body", http.StatusInternalServerError)
 	}
+}
+
+func (ctrl *Controller) GetAlbums(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	pageToken := r.URL.Query().Get("pageToken")
+
+	albums, err := ctrl.client.GetAlbums(ctx, pageToken)
+	if err != nil {
+		ErrorParser(w, err)
+	}
+
+	WriteJSON(w, http.StatusOK, albums)
+}
+
+func (ctrl *Controller) AlbumMigration(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Album Migration")
+
+	/*
+		createAlbum(albumID)
+		for {
+			hasNext, images := getImages(albumID)
+			uploadImages(images)
+			if !hasNext {
+				break
+			}
+		}
+	*/
 }

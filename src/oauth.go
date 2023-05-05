@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"net/http"
 	"os"
 
 	"golang.org/x/oauth2"
@@ -18,4 +20,19 @@ func NewGoogleAuthConfig(filepath string, scope ...string) (*oauth2.Config, erro
 	}
 
 	return config, nil
+}
+
+func NewClient(ctx context.Context, config *oauth2.Config, filepath string) (*http.Client, error) {
+	token, err := GetTokenFromLocal(filepath)
+	if err != nil {
+		return nil, err
+	}
+
+	client := config.Client(ctx, token)
+
+	if err := SaveToken(filepath, token); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -2,46 +2,39 @@ package main
 
 import (
 	"context"
+	"io"
 	"net/http"
-
-	"golang.org/x/oauth2"
 )
 
-type MyTokenSource struct {
-	src      oauth2.TokenSource
-	filepath string
+type GooglePhotosClient interface {
+	CreateAlbum(ctx context.Context, title string) (Album, error)
+	GetAlbums(ctx context.Context, pageToken string) (Albums, error)
+	GetAlbumImages(ctx context.Context, albumID string, pageToken string) (MediaItems, error)
+	UploadImages(ctx context.Context, r io.Reader) error
 }
 
-func (s *MyTokenSource) Token() (*oauth2.Token, error) {
-	token, err := s.src.Token()
-	if err != nil {
-		return nil, err
-	}
-
-	// save token
-	if err := SaveToken(s.filepath, token); err != nil {
-		return nil, err
-	}
-
-	return token, nil
+type GooglePhotosClientImpl struct {
+	client *http.Client
 }
 
-func NewClient(ctx context.Context, config *oauth2.Config, filepath string) (*http.Client, error) {
-	// get token from local
-	token, err := GetTokenFromLocal(filepath)
-	if err != nil {
-		return nil, err
+func NewGooglePhotosClient(client *http.Client) GooglePhotosClient {
+	return &GooglePhotosClientImpl{
+		client: client,
 	}
+}
 
-	tokenSrc := config.TokenSource(ctx, token)
-	mySrc := &MyTokenSource{
-		src:      tokenSrc,
-		filepath: filepath,
-	}
-	reuseSrc := oauth2.ReuseTokenSource(token, mySrc)
+func (cli *GooglePhotosClientImpl) CreateAlbum(ctx context.Context, title string) (Album, error) {
+	return Album{}, nil
+}
 
-	// refresh token
-	client := oauth2.NewClient(ctx, reuseSrc)
+func (cli *GooglePhotosClientImpl) GetAlbums(ctx context.Context, pageToken string) (Albums, error) {
+	return Albums{}, nil
+}
 
-	return client, nil
+func (cli *GooglePhotosClientImpl) GetAlbumImages(ctx context.Context, albumID string, pageToken string) (MediaItems, error) {
+	return MediaItems{}, nil
+}
+
+func (cli *GooglePhotosClientImpl) UploadImages(ctx context.Context, r io.Reader) error {
+	return nil
 }

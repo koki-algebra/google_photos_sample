@@ -22,5 +22,8 @@ func NewServMux(config *oauth2.Config) (http.Handler, func(), error) {
 	// images
 	mux.Get("/images", ctrl.GetImages)
 
+	mux.Get("/albums", ctrl.GetAlbums)
+	mux.Get("/albums/{id}/migration", ctrl.AlbumMigration)
+
 	return mux, func() {}, nil
 }
