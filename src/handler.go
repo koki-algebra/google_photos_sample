@@ -37,7 +37,7 @@ func (ctrl *Controller) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// save access token & refresh token
-	if err := SaveToken("../.secrets/tokens.json", token); err != nil {
+	if err := SaveToken(os.Getenv("TOKENS_FILEPATH"), token); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
