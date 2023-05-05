@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
 	"golang.org/x/oauth2"
 )
 
@@ -66,47 +65,6 @@ func (ctrl *Controller) GetImages(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("%s/mediaItems", photosAPIBaseURL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
-
-	// API call
-	resp, err := client.Do(req)
-	if err != nil {
-		http.Error(w, err.Error(), resp.StatusCode)
-		return
-	}
-	defer resp.Body.Close()
-
-	w.WriteHeader(resp.StatusCode)
-	if _, err := io.Copy(w, resp.Body); err != nil {
-		http.Error(w, "faild to write body", http.StatusInternalServerError)
-	}
-}
-
-func (ctrl *Controller) PatchImage(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	id := chi.URLParam(r, "id")
-
-	// client
-	client, err := NewClient(ctx, ctrl.config, os.Getenv("TOKENS_FILEPATH"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// get access token
-	token, err := GetTokenFromLocal(os.Getenv("TOKENS_FILEPATH"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	url := fmt.Sprintf("%s/mediaItems/%s", photosAPIBaseURL, id)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
