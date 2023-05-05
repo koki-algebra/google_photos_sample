@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"log"
+)
 
 func main() {
-	fmt.Println("Hello, Photos Library!")
+	config, err := NewGoogleAuthConfig("../.secrets/client_secret.json")
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Printf("%+v", config)
 }
