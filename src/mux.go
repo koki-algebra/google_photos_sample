@@ -19,5 +19,8 @@ func NewServMux(config *oauth2.Config) (http.Handler, func(), error) {
 	mux.HandleFunc("/auth", ctrl.Auth)
 	mux.HandleFunc("/callback", ctrl.Callback)
 
+	// images
+	mux.HandleFunc("/images", ctrl.GetImages)
+
 	return mux, func() {}, nil
 }
