@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-chi/chi/v5"
 	"golang.org/x/oauth2"
 )
 
@@ -56,6 +57,19 @@ func (ctrl *Controller) GetAlbums(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, http.StatusOK, albums)
+}
+
+func (ctrl *Controller) GetAlbumImages(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := chi.URLParam(r, "id")
+	pageToken := r.URL.Query().Get("pageToken")
+
+	imgs, err := ctrl.client.GetAlbumImages(ctx, id, pageToken)
+	if err != nil {
+		ErrorParser(w, err)
+	}
+
+	WriteJSON(w, http.StatusOK, imgs)
 }
 
 func (ctrl *Controller) AlbumMigration(w http.ResponseWriter, r *http.Request) {
