@@ -15,12 +15,12 @@ func NewServMux(config *oauth2.Config) (http.Handler, func(), error) {
 
 	ctrl := NewController(config)
 
-	mux.HandleFunc("/health", ctrl.Health)
-	mux.HandleFunc("/auth", ctrl.Auth)
-	mux.HandleFunc("/callback", ctrl.Callback)
+	mux.Get("/health", ctrl.Health)
+	mux.Get("/auth", ctrl.Auth)
+	mux.Get("/callback", ctrl.Callback)
 
 	// images
-	mux.HandleFunc("/images", ctrl.GetImages)
+	mux.Get("/images", ctrl.GetImages)
 
 	return mux, func() {}, nil
 }
