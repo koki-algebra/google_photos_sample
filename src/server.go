@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"golang.org/x/sync/errgroup"
@@ -29,6 +30,7 @@ func (s Server) Run(ctx context.Context) error {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	log.Printf("Server is running at %s port...", strings.Replace(s.srv.Addr, ":", "", 1))
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		if err := s.srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

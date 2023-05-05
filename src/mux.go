@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -14,9 +13,11 @@ func NewServMux(config *oauth2.Config) (http.Handler, func(), error) {
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.Recoverer)
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, Google Photos Library!")
-	})
+	ctrl := NewController(config)
+
+	mux.HandleFunc("/health", ctrl.Health)
+	mux.HandleFunc("/auth", ctrl.Redirect)
+	mux.HandleFunc("/callback", ctrl.Callback)
 
 	return mux, func() {}, nil
 }
