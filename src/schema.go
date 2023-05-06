@@ -1,21 +1,23 @@
 package main
 
+import "time"
+
 /* ----- MediaItems ----- */
 
 type MediaItem struct {
-	ID            string        `json:"id"`
-	Description   string        `json:"description"`
-	ProductUrl    string        `json:"productUrl"`
-	BaseUrl       string        `json:"baseUrl"`
-	MimeType      string        `json:"mimeType"`
-	MediaMetadata MediaMetadata `json:"mediaMetadata"`
-	Filename      string        `json:"filename"`
+	ID            string        `json:"id,omitempty"`
+	Description   string        `json:"description,omitempty"`
+	ProductUrl    string        `json:"productUrl,omitempty"`
+	BaseUrl       string        `json:"baseUrl,omitempty"`
+	MimeType      string        `json:"mimeType,omitempty"`
+	MediaMetadata MediaMetadata `json:"mediaMetadata,omitempty"`
+	Filename      string        `json:"filename,omitempty"`
 }
 
 type MediaMetadata struct {
-	CreationTime string `json:"creationTime"`
-	Width        string `json:"width"`
-	Height       string `json:"height"`
+	CreationTime *time.Time `json:"creationTime,omitempty"`
+	Width        string     `json:"width,omitempty"`
+	Height       string     `json:"height,omitempty"`
 }
 
 type MediaItems struct {
@@ -26,16 +28,20 @@ type MediaItems struct {
 /* ----- Albums -----*/
 
 type Album struct {
-	ID                    string `json:"id"`
-	Title                 string `json:"title"`
-	ProductUrl            string `json:"productUrl"`
+	ID                    string `json:"id,omitempty"`
+	Title                 string `json:"title,omitempty"`
+	ProductUrl            string `json:"productUrl,omitempty"`
 	IsWriteable           bool   `json:"isWriteable"`
-	MediaItemsCount       string `json:"mediaItemsCount"`
-	CoverPhotoBaseUrl     string `json:"coverPhotoBaseUrl"`
-	CoverPhotoMediaItemId string `json:"coverPhotoMediaItemId"`
+	MediaItemsCount       string `json:"mediaItemsCount,omitempty"`
+	CoverPhotoBaseUrl     string `json:"coverPhotoBaseUrl,omitempty"`
+	CoverPhotoMediaItemId string `json:"coverPhotoMediaItemId,omitempty"`
 }
 
 type Albums struct {
 	Albums        []Album `json:"albums"`
 	NextPageToken string  `json:"nextPageToken"`
+}
+
+type CreateAlbum struct {
+	Album Album `json:"album"`
 }

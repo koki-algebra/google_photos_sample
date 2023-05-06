@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -42,6 +43,7 @@ func (ctrl *Controller) Callback(w http.ResponseWriter, r *http.Request) {
 	// save access token & refresh token
 	if err := SaveToken(os.Getenv("TOKENS_FILEPATH"), token); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	fmt.Fprintln(w, "Token successfully saved to local storage")
@@ -54,6 +56,7 @@ func (ctrl *Controller) GetAlbums(w http.ResponseWriter, r *http.Request) {
 	albums, err := ctrl.client.GetAlbums(ctx, pageToken)
 	if err != nil {
 		ErrorParser(w, err)
+		return
 	}
 
 	WriteJSON(w, http.StatusOK, albums)
@@ -67,9 +70,27 @@ func (ctrl *Controller) GetAlbumImages(w http.ResponseWriter, r *http.Request) {
 	imgs, err := ctrl.client.GetAlbumImages(ctx, id, pageToken)
 	if err != nil {
 		ErrorParser(w, err)
+		return
 	}
 
 	WriteJSON(w, http.StatusOK, imgs)
+}
+
+func (ctrl *Controller) CreateAlbum(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var body CreateAlbum
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		ErrorParser(w, err)
+		return
+	}
+
+	album, err := ctrl.client.CreateAlbum(ctx, body.Album.Title)
+	if err != nil {
+		ErrorParser(w, err)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, album)
 }
 
 func (ctrl *Controller) AlbumMigration(w http.ResponseWriter, r *http.Request) {
