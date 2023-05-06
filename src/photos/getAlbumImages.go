@@ -10,7 +10,7 @@ import (
 	"github.com/koki-algebra/google_photos_sample/auth"
 )
 
-func (cli *googlePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID string, pageToken string) (items MediaItems, err error) {
+func (cli *googlePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID string, pageSize int, pageToken string) (items MediaItems, err error) {
 	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
 	if err != nil {
 		return

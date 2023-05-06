@@ -13,6 +13,10 @@ import (
 	"github.com/koki-algebra/google_photos_sample/photos"
 )
 
+const (
+	pageSize = 50
+)
+
 func main() {
 	// load .env file
 	if err := godotenv.Load(".env"); err != nil {
@@ -54,11 +58,27 @@ func main() {
 
 	var pageToken string
 	for {
-		items, err := srcService.GetAlbumImages(ctx, albumID, pageToken)
+		mediaItems, err := srcService.GetAlbumImages(ctx, albumID, pageSize, pageToken)
 		if err != nil {
 			log.Panicf("failed to get images: %v", err)
 		}
-		pageToken = items.NextPageToken
+		pageToken = mediaItems.NextPageToken
+
+		if len(mediaItems.MediaItems) > pageSize {
+			log.Panicf("the number of mediaItems must be less than %d", pageSize)
+		}
+
+		if err := dstService.UploadImages(ctx, mediaItems, albumID); err != nil {
+			log.Panicf("failed to upload images: %v", err)
+		}
+
+		// update creationTime
+		for _, mediaItem := range mediaItems.MediaItems {
+			if err := dstService.PatchImage(ctx, mediaItem); err != nil {
+				log.Printf("id = %s error: %v", mediaItem.ID, err)
+			}
+			log.Printf("id = %s OK", mediaItem.ID)
+		}
 
 		if pageToken == "" {
 			break
