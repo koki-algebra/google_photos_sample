@@ -101,6 +101,10 @@ func (ctrl *Controller) AlbumMigration(w http.ResponseWriter, r *http.Request) {
 		for {
 			hasNext, images := getImages(albumID)
 			uploadImages(images)
+			for each image of images {  // update creationTime
+				patchImage(image)
+			}
+			addImagesToAlbum(images)
 			if !hasNext {
 				break
 			}
