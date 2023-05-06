@@ -25,7 +25,7 @@ func (cli *googlePhotosServiceImpl) PatchImage(ctx context.Context, mediaItem Me
 		return err
 	}
 
-	url := fmt.Sprintf("%s/mediaItems/%s", photosAPIBaseURL, mediaItem.ID)
+	url := fmt.Sprintf("%s/mediaItems/%s?updateMask=description", photosAPIBaseURL, mediaItem.ID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, &reqBody)
 	if err != nil {
