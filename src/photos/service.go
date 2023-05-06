@@ -29,10 +29,6 @@ func NewGooglePhotosService(config *oauth2.Config, tokenFilepath string) GoogleP
 	}
 }
 
-func (cli *googlePhotosServiceImpl) GetAlbum(ctx context.Context, albumID string) (album Album, err error) {
-	return
-}
-
 func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, r io.Reader) error {
 	return nil
 }
