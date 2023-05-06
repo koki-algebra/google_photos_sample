@@ -2,7 +2,6 @@ package photos
 
 import (
 	"context"
-	"io"
 
 	"golang.org/x/oauth2"
 )
@@ -12,7 +11,7 @@ type GooglePhotosService interface {
 	GetAlbum(ctx context.Context, albumID string) (Album, error)
 	GetAlbums(ctx context.Context, pageToken string) (Albums, error)
 	GetAlbumImages(ctx context.Context, albumID string, pageToken string) (MediaItems, error)
-	UploadImages(ctx context.Context, r io.Reader) error
+	UploadImages(ctx context.Context, mediaItems MediaItems) error
 	PatchImage(ctx context.Context, mediaItem MediaItem) error
 	AddImagesToAlbum(ctx context.Context, albumID string, mediaItems MediaItems) error
 }
@@ -27,8 +26,4 @@ func NewGooglePhotosService(config *oauth2.Config, tokenFilepath string) GoogleP
 		config:        config,
 		tokenFilepath: tokenFilepath,
 	}
-}
-
-func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, r io.Reader) error {
-	return nil
 }

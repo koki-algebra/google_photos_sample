@@ -25,6 +25,20 @@ type MediaItems struct {
 	NextPageToken string      `json:"nextPageToken"`
 }
 
+type BatchCreateMediaItems struct {
+	NewMediaItems []newMediaItem `json:"newMediaItems"`
+}
+
+type newMediaItem struct {
+	Description     string          `json:"description"`
+	SimpleMediaItem simpleMediaItem `json:"simpleMediaItem"`
+}
+
+type simpleMediaItem struct {
+	FileName    string `json:"fileName"`
+	UploadToken string `json:"uploadToken"`
+}
+
 /* ----- Albums -----*/
 
 type Album struct {
