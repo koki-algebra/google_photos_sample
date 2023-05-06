@@ -22,9 +22,11 @@ func (cli *googlePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID 
 
 	data := struct {
 		AlbumID   string `json:"albumId"`
+		PageSize  int    `json:"pageSize"`
 		PageToken string `json:"pageToken"`
 	}{
 		AlbumID:   albumID,
+		PageSize:  pageSize,
 		PageToken: pageToken,
 	}
 	var reqBody bytes.Buffer
