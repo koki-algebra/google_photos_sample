@@ -13,7 +13,7 @@ type GooglePhotosService interface {
 	GetAlbums(ctx context.Context, pageToken string) (Albums, error)
 	GetAlbumImages(ctx context.Context, albumID string, pageToken string) (MediaItems, error)
 	UploadImages(ctx context.Context, r io.Reader) error
-	PatchImage(ctx context.Context, mediaItem MediaItem) (MediaItem, error)
+	PatchImage(ctx context.Context, mediaItem MediaItem) error
 	AddImagesToAlbum(ctx context.Context, mediaItems MediaItems) error
 }
 
@@ -31,10 +31,6 @@ func NewGooglePhotosService(config *oauth2.Config, tokenFilepath string) GoogleP
 
 func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, r io.Reader) error {
 	return nil
-}
-
-func (cli *googlePhotosServiceImpl) PatchImage(ctx context.Context, mediaItem MediaItem) (MediaItem, error) {
-	return MediaItem{}, nil
 }
 
 func (cli *googlePhotosServiceImpl) AddImagesToAlbum(ctx context.Context, mediaItems MediaItems) error {
