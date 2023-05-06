@@ -1,14 +1,9 @@
 package photos
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"fmt"
 	"io"
-	"net/http"
 
-	"github.com/koki-algebra/google_photos_sample/auth"
 	"golang.org/x/oauth2"
 )
 
@@ -34,131 +29,7 @@ func NewGooglePhotosService(config *oauth2.Config, tokenFilepath string) GoogleP
 	}
 }
 
-func (cli *googlePhotosServiceImpl) CreateAlbum(ctx context.Context, title string) (album Album, err error) {
-	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
-	if err != nil {
-		return
-	}
-	token, err := auth.GetTokenFromLocal(cli.tokenFilepath)
-	if err != nil {
-		return
-	}
-
-	data := CreateAlbum{Album: Album{Title: title}}
-	var reqBody bytes.Buffer
-	if err = json.NewEncoder(&reqBody).Encode(data); err != nil {
-		return
-	}
-
-	url := fmt.Sprintf("%s/albums", photosAPIBaseURL)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, &reqBody)
-	if err != nil {
-		return
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		err = NewGooglePhotosError(resp.Body)
-		return
-	}
-
-	if err = json.NewDecoder(resp.Body).Decode(&album); err != nil {
-		return
-	}
-
-	return
-}
-
 func (cli *googlePhotosServiceImpl) GetAlbum(ctx context.Context, albumID string) (album Album, err error) {
-	return
-}
-
-func (cli *googlePhotosServiceImpl) GetAlbums(ctx context.Context, pageToken string) (albums Albums, err error) {
-	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
-	if err != nil {
-		return
-	}
-	token, err := auth.GetTokenFromLocal(cli.tokenFilepath)
-	if err != nil {
-		return
-	}
-
-	url := fmt.Sprintf("%s/albums?pageToken=%s", photosAPIBaseURL, pageToken)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		err = NewGooglePhotosError(resp.Body)
-		return
-	}
-
-	if err = json.NewDecoder(resp.Body).Decode(&albums); err != nil {
-		return
-	}
-
-	return
-}
-
-func (cli *googlePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID string, pageToken string) (items MediaItems, err error) {
-	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
-	if err != nil {
-		return
-	}
-	token, err := auth.GetTokenFromLocal(cli.tokenFilepath)
-	if err != nil {
-		return
-	}
-
-	data := struct {
-		AlbumID   string `json:"albumId"`
-		PageToken string `json:"pageToken"`
-	}{
-		AlbumID:   albumID,
-		PageToken: pageToken,
-	}
-	var reqBody bytes.Buffer
-	if err = json.NewEncoder(&reqBody).Encode(data); err != nil {
-		return
-	}
-
-	url := fmt.Sprintf("%s/mediaItems:search", photosAPIBaseURL)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, &reqBody)
-	if err != nil {
-		return
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		err = NewGooglePhotosError(resp.Body)
-		return
-	}
-
-	if err = json.NewDecoder(resp.Body).Decode(&items); err != nil {
-		return
-	}
-
 	return
 }
 
