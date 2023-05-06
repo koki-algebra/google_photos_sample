@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/koki-algebra/google_photos_sample/auth"
 	"golang.org/x/oauth2"
@@ -37,8 +39,11 @@ func (ctrl *Controller) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// pending how to determin token filename
+	filename := time.Now().String()
+
 	// save access token & refresh token
-	if err := auth.SaveToken(os.Getenv("TOKENS_FILEPATH"), token); err != nil {
+	if err := auth.SaveToken(filepath.Join(os.Getenv("TOKENS_DIR"), filename), token); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

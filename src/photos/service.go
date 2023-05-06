@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/koki-algebra/google_photos_sample/auth"
 	"golang.org/x/oauth2"
@@ -23,22 +22,23 @@ type GooglePhotosService interface {
 	AddImagesToAlbum(ctx context.Context, mediaItems MediaItems) error
 }
 
-type GooglePhotosServiceImpl struct {
-	config *oauth2.Config
+type googlePhotosServiceImpl struct {
+	config        *oauth2.Config
+	tokenFilepath string
 }
 
 func NewGooglePhotosService(config *oauth2.Config) GooglePhotosService {
-	return &GooglePhotosServiceImpl{
+	return &googlePhotosServiceImpl{
 		config: config,
 	}
 }
 
-func (cli *GooglePhotosServiceImpl) CreateAlbum(ctx context.Context, title string) (album Album, err error) {
-	client, err := auth.NewClient(ctx, cli.config, os.Getenv("TOKENS_FILEPATH"))
+func (cli *googlePhotosServiceImpl) CreateAlbum(ctx context.Context, title string) (album Album, err error) {
+	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
 	if err != nil {
 		return
 	}
-	token, err := auth.GetTokenFromLocal(os.Getenv("TOKENS_FILEPATH"))
+	token, err := auth.GetTokenFromLocal(cli.tokenFilepath)
 	if err != nil {
 		return
 	}
@@ -63,6 +63,11 @@ func (cli *GooglePhotosServiceImpl) CreateAlbum(ctx context.Context, title strin
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		err = NewGooglePhotosError(resp.Body)
+		return
+	}
+
 	if err = json.NewDecoder(resp.Body).Decode(&album); err != nil {
 		return
 	}
@@ -70,16 +75,16 @@ func (cli *GooglePhotosServiceImpl) CreateAlbum(ctx context.Context, title strin
 	return
 }
 
-func (cli *GooglePhotosServiceImpl) GetAlbum(ctx context.Context, albumID string) (album Album, err error) {
+func (cli *googlePhotosServiceImpl) GetAlbum(ctx context.Context, albumID string) (album Album, err error) {
 	return
 }
 
-func (cli *GooglePhotosServiceImpl) GetAlbums(ctx context.Context, pageToken string) (albums Albums, err error) {
-	client, err := auth.NewClient(ctx, cli.config, os.Getenv("TOKENS_FILEPATH"))
+func (cli *googlePhotosServiceImpl) GetAlbums(ctx context.Context, pageToken string) (albums Albums, err error) {
+	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
 	if err != nil {
 		return
 	}
-	token, err := auth.GetTokenFromLocal(os.Getenv("TOKENS_FILEPATH"))
+	token, err := auth.GetTokenFromLocal(cli.tokenFilepath)
 	if err != nil {
 		return
 	}
@@ -98,6 +103,7 @@ func (cli *GooglePhotosServiceImpl) GetAlbums(ctx context.Context, pageToken str
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
+		err = NewGooglePhotosError(resp.Body)
 		return
 	}
 
@@ -108,12 +114,12 @@ func (cli *GooglePhotosServiceImpl) GetAlbums(ctx context.Context, pageToken str
 	return
 }
 
-func (cli *GooglePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID string, pageToken string) (items MediaItems, err error) {
-	client, err := auth.NewClient(ctx, cli.config, os.Getenv("TOKENS_FILEPATH"))
+func (cli *googlePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID string, pageToken string) (items MediaItems, err error) {
+	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
 	if err != nil {
 		return
 	}
-	token, err := auth.GetTokenFromLocal(os.Getenv("TOKENS_FILEPATH"))
+	token, err := auth.GetTokenFromLocal(cli.tokenFilepath)
 	if err != nil {
 		return
 	}
@@ -144,6 +150,7 @@ func (cli *GooglePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID 
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
+		err = NewGooglePhotosError(resp.Body)
 		return
 	}
 
@@ -154,14 +161,14 @@ func (cli *GooglePhotosServiceImpl) GetAlbumImages(ctx context.Context, albumID 
 	return
 }
 
-func (cli *GooglePhotosServiceImpl) UploadImages(ctx context.Context, r io.Reader) error {
+func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, r io.Reader) error {
 	return nil
 }
 
-func (cli *GooglePhotosServiceImpl) PatchImage(ctx context.Context, mediaItem MediaItem) (MediaItem, error) {
+func (cli *googlePhotosServiceImpl) PatchImage(ctx context.Context, mediaItem MediaItem) (MediaItem, error) {
 	return MediaItem{}, nil
 }
 
-func (cli *GooglePhotosServiceImpl) AddImagesToAlbum(ctx context.Context, mediaItems MediaItems) error {
+func (cli *googlePhotosServiceImpl) AddImagesToAlbum(ctx context.Context, mediaItems MediaItems) error {
 	return nil
 }
