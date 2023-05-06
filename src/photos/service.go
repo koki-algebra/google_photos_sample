@@ -27,9 +27,10 @@ type googlePhotosServiceImpl struct {
 	tokenFilepath string
 }
 
-func NewGooglePhotosService(config *oauth2.Config) GooglePhotosService {
+func NewGooglePhotosService(config *oauth2.Config, tokenFilepath string) GooglePhotosService {
 	return &googlePhotosServiceImpl{
-		config: config,
+		config:        config,
+		tokenFilepath: tokenFilepath,
 	}
 }
 

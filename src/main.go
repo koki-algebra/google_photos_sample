@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -25,7 +26,7 @@ func run(ctx context.Context) error {
 
 	scopes := strings.Split(os.Getenv("SCOPES"), ",")
 
-	config, err := auth.NewGoogleAuthConfig(os.Getenv("CLIENT_SECRET_FILEPATH"), scopes...)
+	config, err := auth.NewGoogleAuthConfig(filepath.Join(os.Getenv("SECRET_DIR"), "client_secret.json"), scopes...)
 	if err != nil {
 		log.Printf("failed to initialize google auth config")
 		return err

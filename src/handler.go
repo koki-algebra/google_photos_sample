@@ -40,10 +40,10 @@ func (ctrl *Controller) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// pending how to determin token filename
-	filename := time.Now().String()
+	filename := time.Now().String() + ".json"
 
 	// save access token & refresh token
-	if err := auth.SaveToken(filepath.Join(os.Getenv("TOKENS_DIR"), filename), token); err != nil {
+	if err := auth.SaveToken(filepath.Join(os.Getenv("SECRET_DIR"), filename), token); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
