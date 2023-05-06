@@ -45,3 +45,7 @@ type Albums struct {
 type CreateAlbum struct {
 	Album Album `json:"album"`
 }
+
+type BatchAddMediaItems struct {
+	MediaItemIds []string `json:"mediaItemIds"`
+}
