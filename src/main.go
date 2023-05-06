@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
+	"github.com/koki-algebra/google_photos_sample/auth"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func run(ctx context.Context) error {
 
 	scopes := strings.Split(os.Getenv("SCOPES"), ",")
 
-	config, err := NewGoogleAuthConfig(os.Getenv("CLIENT_SECRET_FILEPATH"), scopes...)
+	config, err := auth.NewGoogleAuthConfig(os.Getenv("CLIENT_SECRET_FILEPATH"), scopes...)
 	if err != nil {
 		log.Printf("failed to initialize google auth config")
 		return err
