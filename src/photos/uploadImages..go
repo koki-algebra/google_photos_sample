@@ -11,7 +11,7 @@ import (
 	"github.com/koki-algebra/google_photos_sample/auth"
 )
 
-func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, mediaItems MediaItems) error {
+func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, mediaItems MediaItems, albumID string) error {
 	client, err := auth.NewClient(ctx, cli.config, cli.tokenFilepath)
 	if err != nil {
 		return err
@@ -26,6 +26,7 @@ func (cli *googlePhotosServiceImpl) UploadImages(ctx context.Context, mediaItems
 		reqBody bytes.Buffer
 	)
 	// upload images
+	data.AlbumID = albumID
 	for _, mediaItem := range mediaItems.MediaItems {
 		uploadToken, err := cli.uploadImage(ctx, mediaItem)
 		if err != nil {

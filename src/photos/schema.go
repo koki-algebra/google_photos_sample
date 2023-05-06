@@ -26,6 +26,7 @@ type MediaItems struct {
 }
 
 type BatchCreateMediaItems struct {
+	AlbumID       string         `json:"albumId,omitempty"`
 	NewMediaItems []newMediaItem `json:"newMediaItems"`
 }
 
