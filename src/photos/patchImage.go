@@ -1,10 +1,10 @@
 package photos
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/koki-algebra/google_photos_sample/auth"
@@ -20,14 +20,15 @@ func (cli *googlePhotosServiceImpl) PatchImage(ctx context.Context, mediaItem Me
 		return err
 	}
 
-	var reqBody bytes.Buffer
-	if err := json.NewEncoder(&reqBody).Encode(mediaItem); err != nil {
-		return err
-	}
-
 	url := fmt.Sprintf("%s/mediaItems/%s?updateMask=description", photosAPIBaseURL, mediaItem.ID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, &reqBody)
+	pr, pw := io.Pipe()
+	go func() {
+		err = json.NewEncoder(pw).Encode(&mediaItem)
+		pw.Close()
+	}()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, pr)
 	if err != nil {
 		return err
 	}

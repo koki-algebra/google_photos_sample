@@ -1,10 +1,10 @@
 package photos
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/koki-algebra/google_photos_sample/auth"
@@ -20,20 +20,19 @@ func (cli *googlePhotosServiceImpl) AddImagesToAlbum(ctx context.Context, albumI
 		return err
 	}
 
-	var (
-		data    BatchAddMediaItems
-		reqBody bytes.Buffer
-	)
+	var data BatchAddMediaItems
 	for _, mediaItem := range mediaItems.MediaItems {
 		data.MediaItemIds = append(data.MediaItemIds, mediaItem.ID)
 	}
-	if err := json.NewEncoder(&reqBody).Encode(data); err != nil {
-		return err
-	}
+	pr, pw := io.Pipe()
+	go func() {
+		err = json.NewEncoder(pw).Encode(&data)
+		pw.Close()
+	}()
 
 	url := fmt.Sprintf("%s/albums/%s:batchAddMediaItems", photosAPIBaseURL, albumID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, &reqBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, pr)
 	if err != nil {
 		return err
 	}
